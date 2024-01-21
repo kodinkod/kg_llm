@@ -1,0 +1,5 @@
+python-docx
+beautifulsoup4
+networkx
+matplotlib
+dataclasses
