@@ -1,0 +1,122 @@
+<!doctype html>
+                  <html lang="ru">
+                    <head>
+                    <meta charset="utf-8"/>
+                    <title>Interractive graph</title>
+                    <style>
+                      .parent > div {
+                        background: #eee;
+                        float: left;
+                        margin-right: 2%;
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing: border-box;
+                        box-sizing: border-box;
+                      }
+                      #all_information{
+                        overflow-y:scroll;
+                        overflow-x:scroll;
+                      }
+                      #mynetwork {
+                          width: 1600px;
+                          height: 800px;
+                          border: 1px solid lightgray;
+                      }
+                      table, td,th {
+                        border: 1px solid black; 
+                        border-collapse: collapse;
+                      }
+                    </style>
+                    </head>
+                    <body>
+                    
+                    <div class="parent">
+                        <div id="mynetwork"></div>
+                        <div id="all_information"></div>
+                    </div>
+                    
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
+                    <script src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+                    <script>var nodes = new vis.DataSet([{'text': 'Мой тестовый пример', 'id': '07e8e9787446625d2cb36d174fef13ab_9de570680f097eceffed6cef590b0818', 'label': 'Мой тестовый пример'}, {'text': 'Заголовок 1', 'id': '07e8e9787446625d2cb36d174fef13ab_34141a94ec6b218c33a917f98659473e', 'label': 'Заголовок 1'}, {'text': 'Какой то текст в 1 заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_83ae0f362ed8cb117e92262200d32124', 'label': 'Какой то текст в 1 заголовке'}, {'text': 'И еще какой то текст в 1 заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_59dc0cf56d03f926a83de020af8c50ba', 'label': 'И еще какой то текст в 1 заголовке'}, {'text': '•\tСписок в 1 заголовке\n•\tСписок в 1 заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_d99c8a79e2e037ae0352ba652f88f6d5', 'label': '•\tСписок в 1 заголовке\n•\tСписок в 1 заголовке'}, {'text': 'Заголовок 2', 'id': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0', 'label': 'Заголовок 2'}, {'text': 'Какой то текст в 2 заголовке под 1 заголовком', 'id': '07e8e9787446625d2cb36d174fef13ab_8357be0b9f7a49074318eb483dea7207', 'label': 'Какой то текст в 2 заголовке под 1 заголовком'}, {'text': 'Еще во втором', 'id': '07e8e9787446625d2cb36d174fef13ab_6cdf22a225e23412c1fb5fec5ce2a2da', 'label': 'Еще во втором'}, {'text': 'Заголовок 3', 'id': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019', 'label': 'Заголовок 3'}, {'text': 'Текст в 3м заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_d0fc0f7beabf967e2fc9c9796c0b66b0', 'label': 'Текст в 3м заголовке'}, {'text': 'Текст2 в 3м заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_c5f31ef7f84e772147a0665ab1d1b164', 'label': 'Текст2 в 3м заголовке'}, {'text': 'Текст3 в 3м заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_e88652cf36e40179fc266381db54bcbd', 'label': 'Текст3 в 3м заголовке'}, {'text': 'Заголовок 4', 'id': '07e8e9787446625d2cb36d174fef13ab_75f207aff509486fb5f63ece3d9b2a96', 'label': 'Заголовок 4'}, {'text': 'Текст в 4м заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_9f445c5ca731fbb34b255d43d91e580d', 'label': 'Текст в 4м заголовке'}, {'text': '•\tСписок в 4 заголовке\n•\tСписок в 4 заголовке\n•\tСписок в 4 заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_52c11e99e38ef5dc83eb6834c37df6e3', 'label': '•\tСписок в 4 заголовке\n•\tСписок в 4 заголовке\n•\tСписок в 4 заголовке'}, {'text': 'Заголовок 3 после 4', 'id': '07e8e9787446625d2cb36d174fef13ab_5aa99a92be3cbb75d9e5f76f856c587c', 'label': 'Заголовок 3 после 4'}, {'text': 'Текст в 3 после 4 заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_f1e0c3e9ee0671cbfb9076533e19bbae', 'label': 'Текст в 3 после 4 заголовке'}, {'text': 'НОВЫЙ 1 заголовок', 'id': '07e8e9787446625d2cb36d174fef13ab_dec329f0f405a96ec68f9a67176b8de0', 'label': 'НОВЫЙ 1 заголовок'}, {'text': 'Текст в новом заголовке', 'id': '07e8e9787446625d2cb36d174fef13ab_f075deaa468db64895dcb1bf3d3991e6', 'label': 'Текст в новом заголовке'}, {'text': 'Заголовок 2new', 'id': '07e8e9787446625d2cb36d174fef13ab_03e69dea4add053e83e442cee9123fb4', 'label': 'Заголовок 2new'}, {'text': 'Текст тут', 'id': '07e8e9787446625d2cb36d174fef13ab_64bdf943852b76e237d2c8452d004cab', 'label': 'Текст тут'}, {'text': 'Заголовок 3new', 'id': '07e8e9787446625d2cb36d174fef13ab_e1273c9dc1691884b81467ecae0b105e', 'label': 'Заголовок 3new'}]);
+var edges = new vis.DataSet([{'label': 'contains_root', 'from': '07e8e9787446625d2cb36d174fef13ab_9de570680f097eceffed6cef590b0818', 'to': '07e8e9787446625d2cb36d174fef13ab_34141a94ec6b218c33a917f98659473e'}, {'label': 'contains_root', 'from': '07e8e9787446625d2cb36d174fef13ab_9de570680f097eceffed6cef590b0818', 'to': '07e8e9787446625d2cb36d174fef13ab_dec329f0f405a96ec68f9a67176b8de0'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_34141a94ec6b218c33a917f98659473e', 'to': '07e8e9787446625d2cb36d174fef13ab_83ae0f362ed8cb117e92262200d32124'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_34141a94ec6b218c33a917f98659473e', 'to': '07e8e9787446625d2cb36d174fef13ab_59dc0cf56d03f926a83de020af8c50ba'}, {'label': 'contains', 'from': '07e8e9787446625d2cb36d174fef13ab_34141a94ec6b218c33a917f98659473e', 'to': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0'}, {'label': 'list_contain', 'from': '07e8e9787446625d2cb36d174fef13ab_59dc0cf56d03f926a83de020af8c50ba', 'to': '07e8e9787446625d2cb36d174fef13ab_d99c8a79e2e037ae0352ba652f88f6d5'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0', 'to': '07e8e9787446625d2cb36d174fef13ab_8357be0b9f7a49074318eb483dea7207'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0', 'to': '07e8e9787446625d2cb36d174fef13ab_6cdf22a225e23412c1fb5fec5ce2a2da'}, {'label': 'contains', 'from': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0', 'to': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019'}, {'label': 'contains_root', 'from': '07e8e9787446625d2cb36d174fef13ab_382e2ac1c29ae40ea556bffbec27c7d0', 'to': '07e8e9787446625d2cb36d174fef13ab_5aa99a92be3cbb75d9e5f76f856c587c'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019', 'to': '07e8e9787446625d2cb36d174fef13ab_d0fc0f7beabf967e2fc9c9796c0b66b0'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019', 'to': '07e8e9787446625d2cb36d174fef13ab_c5f31ef7f84e772147a0665ab1d1b164'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019', 'to': '07e8e9787446625d2cb36d174fef13ab_e88652cf36e40179fc266381db54bcbd'}, {'label': 'contains', 'from': '07e8e9787446625d2cb36d174fef13ab_9784f24e717247793866a02143a45019', 'to': '07e8e9787446625d2cb36d174fef13ab_75f207aff509486fb5f63ece3d9b2a96'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_75f207aff509486fb5f63ece3d9b2a96', 'to': '07e8e9787446625d2cb36d174fef13ab_9f445c5ca731fbb34b255d43d91e580d'}, {'label': 'list_contain', 'from': '07e8e9787446625d2cb36d174fef13ab_9f445c5ca731fbb34b255d43d91e580d', 'to': '07e8e9787446625d2cb36d174fef13ab_52c11e99e38ef5dc83eb6834c37df6e3'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_5aa99a92be3cbb75d9e5f76f856c587c', 'to': '07e8e9787446625d2cb36d174fef13ab_f1e0c3e9ee0671cbfb9076533e19bbae'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_dec329f0f405a96ec68f9a67176b8de0', 'to': '07e8e9787446625d2cb36d174fef13ab_f075deaa468db64895dcb1bf3d3991e6'}, {'label': 'contains_root', 'from': '07e8e9787446625d2cb36d174fef13ab_dec329f0f405a96ec68f9a67176b8de0', 'to': '07e8e9787446625d2cb36d174fef13ab_03e69dea4add053e83e442cee9123fb4'}, {'label': 'contains_root', 'from': '07e8e9787446625d2cb36d174fef13ab_dec329f0f405a96ec68f9a67176b8de0', 'to': '07e8e9787446625d2cb36d174fef13ab_e1273c9dc1691884b81467ecae0b105e'}, {'label': 'contains_paragraph', 'from': '07e8e9787446625d2cb36d174fef13ab_03e69dea4add053e83e442cee9123fb4', 'to': '07e8e9787446625d2cb36d174fef13ab_64bdf943852b76e237d2c8452d004cab'}]);
+
+      var container = document.getElementById('mynetwork');
+      var data = {
+        nodes: nodes,
+        edges: edges
+      };
+      var options = {
+        "physics":{
+          "barnesHut":{
+            "gravitationalConstant": -4000, 
+            "springConstant": 0.006,
+            "damping":0.2
+          },
+          "repulsion":{"nodeDistance":300}
+        }
+      };
+
+    var network = new vis.Network(container, data, options);
+    var res_container = document.getElementById('all_information');
+
+    network.on( 'click', function(properties) {
+        var clickedNodes = nodes.get(properties.nodes);
+        var clickedEdges = edges.get(properties.edges);
+        var clickedObject;
+
+        if (clickedNodes.length==0 & clickedEdges.length==0){
+            console.log("")
+            } else {
+                    clickedObject = clickedEdges[0] 
+                    var total_sum_by_doctype = clickedObject['info'];
+                    var tsbd_labels = Object.keys(total_sum_by_doctype);
+                    var tsbd_values = Object.values(total_sum_by_doctype);
+                    createTable(tsbd_labels, tsbd_values);
+                    } 
+    });
+
+    function createTable(labels, values){
+      var table = document.getElementById('text_information');
+      if (table != null)
+      {
+        table.remove(table);
+        table = document.createElement('table');
+        table.setAttribute('id', 'text_information');
+        res_container.appendChild(table);
+      }
+      else{
+        table = document.createElement('table');
+        table.setAttribute('id', 'text_information');
+        res_container.appendChild(table);
+      }
+      var tr_header = document.createElement('tr');
+      var th_col_label = document.createElement('th');
+      th_col_label.innerHTML = "Номер";
+      var th_col_value = document.createElement('th');
+      th_col_value.innerHTML = "Предложение, которое содержит ребро";
+      tr_header.appendChild(th_col_label);
+      tr_header.appendChild(th_col_value);
+      table.appendChild(tr_header);
+
+      for (var i=0; i < labels.length; i++){
+        var tr = document.createElement('tr');
+        let td1 = document.createElement('td');
+        td1.innerHTML = labels[i]
+        let td2 = document.createElement('td');
+        td2.innerHTML = values[i]
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        table.appendChild(tr);
+      }
+    }
+
+
+    </script>
+    <style>
+      #all_information {
+        overflow-y:scroll;
+      }
+    </style>
+    </body>
+    </html>

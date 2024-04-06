@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "kg-llm"
+version = "0.1.0"
+description = ""
+authors = ["kodidi <koddinrus@gmail.com>"]
+readme = "README.md"
+packages = [{include = "kg_llm"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+networkx = "^3.2.1"
+bs4 = "^0.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
