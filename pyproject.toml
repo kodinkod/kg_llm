@@ -10,6 +10,24 @@ packages = [{include = "kg_llm"}]
 python = "^3.9"
 networkx = "^3.2.1"
 bs4 = "^0.0.2"
+gensim = "^4.3.2"
+scipy = "1.12.0"
+pdfplumber = "^0.11.0"
+nltk = "^3.8.1"
+python-docx = "^1.1.0"
+neo4j = "5.19.0"
+langchain = "^0.1.14"
+langchain-community = "^0.0.31"
+langchain-openai = "^0.1.1"
+langchain-experimental = "^0.0.56"
+wikipedia = "^1.4.0"
+tiktoken = "^0.6.0"
+yfiles-jupyter-graphs = "^1.6.2"
+pypdf = "^4.1.0"
+docx2txt = "^0.8"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.4"
 
 [build-system]
 requires = ["poetry-core"]
