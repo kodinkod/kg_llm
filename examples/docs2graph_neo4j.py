@@ -10,19 +10,18 @@ os.environ["NEO4J_URI"] ="bolt://localhost:7687"
 os.environ["NEO4J_USERNAME"] = "kodin"
 os.environ["NEO4J_PASSWORD"] = "12345678"
 
-
-doc_path="/Applications/programming/kg_llm/dozor/dozor.docx"
+doc_path="assets/dozor/dozor.docx"
 parser = DOCXParser()
 parser.parse(doc_path)
 
 triples, _ = get_triples_from_dcx(parser.get_lines_with_meta())
-graph_document = get_GraphDocument_from_triples(triples)
+graph_document = get_GraphDocument_from_triples(triples, doc_path)
 
 graph = Neo4jGraph(database='testdb')
 
-if graph.query("CREATE OR REPLACE DATABASE testdb"):
-    graph.add_graph_documents(
-        [graph_document],
-        baseEntityLabel=True,
-        include_source=True
-    )
+#graph.query("CREATE OR REPLACE DATABASE testdb")
+graph.add_graph_documents(
+    [graph_document],
+    baseEntityLabel=True,
+    include_source=True
+)

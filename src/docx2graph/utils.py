@@ -233,7 +233,7 @@ def draw_graph(name, node_link_data):
             "w", encoding="utf-8") as f: 
         f.write(full_text)
         
-def get_GraphDocument_from_triples(triples):
+def get_GraphDocument_from_triples(triples, path="usage.docx"):
     """
     Builds a GraphDocument from a list of triples.
 
@@ -268,7 +268,7 @@ def get_GraphDocument_from_triples(triples):
                         type=triplet[1])
         )
         
-    source = Document(page_content="content")
+    source = Document(page_content="path", metadata={"path": path})
     
     return  GraphDocument(nodes=nodes, relationships=relationships, source=source)
 
