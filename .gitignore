@@ -159,3 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 assets/dozor/*
+*_test.ipynb
+.vscode/settings.json
+.DS_Store
+.DS_Store
+.DS_Store

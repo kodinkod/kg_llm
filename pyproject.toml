@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["kodidi <koddinrus@gmail.com>"]
 readme = "README.md"
-packages = [{include = "kg_llm"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -25,6 +25,9 @@ tiktoken = "^0.6.0"
 yfiles-jupyter-graphs = "^1.6.2"
 pypdf = "^4.1.0"
 docx2txt = "^0.8"
+ragas = "^0.1.7"
+langchain-mistralai = "^0.1.2"
+gigachain = "^0.1.16"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.4"

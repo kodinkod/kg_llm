@@ -1,9 +1,9 @@
 import networkx as nx
 
-from src.docx2graph.graph_node import Header_node, List_node, Paragraph_node
+from src.docx2graph.from_docx_structure.graph_node import Header_node, List_node, Paragraph_node
 from itertools import chain
 import networkx as nx
-from src.docx2graph.js_script_for_graph import header_text, tail_text
+from src.docx2graph.from_docx_structure.js_script_for_graph import header_text, tail_text
 from langchain_community.graphs.graph_document import GraphDocument, Node,Relationship
 from langchain_core.documents.base import Document
 
