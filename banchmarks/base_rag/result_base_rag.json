@@ -1,0 +1,7 @@
+{
+    "faithfulness": 0.9743589743589743,
+    "context_relevancy": 0.27837844214181906,
+    "answer_relevancy": 0.6652721084575495,
+    "answer_similarity": 0.8684664534409324,
+    "bleu_score": 0.082627319899361
+}
