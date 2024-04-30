@@ -1,0 +1,24 @@
+defaults:
+  - _self_
+  - db: chroma
+  - embedding2rag: gigachat
+  - llm2rag: gigachat_lite_plus
+  - llm2eval: gpt35_turbo
+  - embedding2eval: ada_v2 
+  - rag_pipeline: base
+  - prompt: base
+  - splitter: RecursiveCharacterTextSplitter
+
+
+name: "base_rag"
+
+test_set_path: "assets/test_set_29.csv"
+
+file_names_for_rag_eval:
+  - "assets/скан-архив/install_and_settings.docx"
+  - "assets/скан-архив/usage_big.docx"
+  - "assets/dozor/dozor.docx"
+  - "assets/dozor/install.docx"
+  - "assets/dozor/usage_big.docx"
+  - "assets/dozor/usage.docx"
+  - "assets/other/гендальф.docx"
