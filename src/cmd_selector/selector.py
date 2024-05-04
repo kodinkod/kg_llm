@@ -4,11 +4,13 @@ class ModelSelector:
     Class for selecting language model for generating text
     """
 
-    def __init__(self, models):
+    def __init__(self, models, title = "What llm model would you like to use:"):
         """
         Init method for ModelSelector
         :param models: dictionary with models, where key is id of model and value is dict with 'name' and 'path'
         """
+        
+        self.title = title
         self.models = models
 
     def get_user_choice(self):
@@ -16,7 +18,7 @@ class ModelSelector:
         Method for getting user choice from console
         :return: user choice
         """
-        print("What llm model would you like to use:")
+        print(self.title)
         for key in sorted(self.models):
             print(f"{key} - {self.models[key]['name']}")
         print("0 - exit")

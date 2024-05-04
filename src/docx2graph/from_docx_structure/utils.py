@@ -7,6 +7,8 @@ from src.docx2graph.from_docx_structure.js_script_for_graph import header_text, 
 from langchain_community.graphs.graph_document import GraphDocument, Node,Relationship
 from langchain_core.documents.base import Document
 
+import hashlib
+import secrets
 
 def build_knowledge_graph(triples):
     """
@@ -54,6 +56,8 @@ def get_triples_from_dcx(lines_with_meta, start_level = 0, roots = []):
     prev_node = fective_start
     prev_node.level = (-1,-1)
     
+    prev_paragraph = None
+    
     # цикл по всем элементам
     while num < len(lines_with_meta):
         f = False
@@ -72,47 +76,34 @@ def get_triples_from_dcx(lines_with_meta, start_level = 0, roots = []):
             if fective_start.text != start.text:
                 triples.append([fective_start, 'contains_root', start])
                 roots.append(start)
+            prev_paragraph=None #сбросили цепочку прараграфов
         
-        # просто текст под заголовком 
-        elif (not is_list(item['type'])) and (not is_header(item['type'])):
+        # просто текст под заголовком или список
+        elif not is_header(item['type']):
             paragraph = Paragraph_node(item['text'], item['uid'])
             #print('paragraph', item['text'])
             
+            if prev_paragraph is not None:
+                relation = 'contains_paragraph'
+            else:
+                relation = 'contains_paragraph_start'
+                
             if start is not None:
                 if paragraph.text != start.text:
-                    triples.append([start, 'contains_paragraph', paragraph])
+                    triples.append([start, relation, paragraph])
             else:
                 if paragraph.text != fective_start.text:
-                    triples.append([fective_start, 'contains_paragraph', paragraph])
-                
-        
-        # встретили список
-        elif (start is not None ) and (not is_header(item['type'])):
-            #print('list', item['text'])
-            #prev_node # заголовок списка -  предыдущий прарграф
+                    triples.append([fective_start, relation, paragraph])
             
-            # собираем все элементы списка в одну node
-            cur_list_items=[]
-            j=num
-            while j < len(lines_with_meta):
-                if is_list(lines_with_meta[j]['type']):
-                    cur_list_items.append(lines_with_meta[j]['text'] + '\n')
-                    j+=1
-                else:
-                    break
-            num = j-1
-            cur_list_node = List_node("".join(cur_list_items), item['uid'])
-           
-            triples.append([prev_node, "list_contain" ,cur_list_node ])    
-            #print("+++++++++++")
-            #print(list_title)
-            #print(cur_list_items)
-            #print("+++++++++++++++")
-            #print()
+            if prev_paragraph is not None:
+                triples.append([prev_paragraph, 'next_paragraph', paragraph])
+       
+            prev_paragraph = paragraph
             
         elif is_header(item['type']): 
             # встретился headr
             #print('header', item['text'])
+            prev_paragraph=None #сбросили цепочку прараграфов
             
             if item['level'] > cur_level:
                 new_node_header = Header_node(item['text'], item['level'], item['uid'])
@@ -248,16 +239,23 @@ def get_GraphDocument_from_triples(triples, path="usage.docx"):
     and assigns the predicate as a label to the edges. The resulting GraphDocument
     captures relationships between subjects and objects in the knowledge domain.
     """
+
     nodes = []
     relationships = []
     for triplet in triples:
-        src = Node(id=triplet[0].text[:100], 
-                type=triplet[0].__class__.__name__, 
-                properties={'text': triplet[0].text})
+        src_text = clean_text(triplet[0].text)
+        target_text = clean_text(triplet[2].text)
         
-        target = Node(id=triplet[2].text[:100], 
+        if src_text=="" or target_text =="":
+            continue
+        
+        src = Node(id=triplet[0].text[:100] + triplet[0].id, 
+                type=triplet[0].__class__.__name__, 
+                properties={'text':  src_text})
+        
+        target = Node(id=triplet[2].text[:100] + triplet[2].id, 
                     type=triplet[2].__class__.__name__, 
-                    properties={'text': triplet[2].text})
+                    properties={'text': target_text})
         
         nodes.append(src)
         nodes.append(target)
@@ -267,8 +265,27 @@ def get_GraphDocument_from_triples(triples, path="usage.docx"):
                         target=target, 
                         type=triplet[1])
         )
-        
-    source = Document(page_content="path", metadata={"path": path})
+
+    name = path.replace('/', '-')
+    source = Document(page_content=name, metadata={"path": path})
     
     return  GraphDocument(nodes=nodes, relationships=relationships, source=source)
 
+
+def get_random_hash():
+    random_bytes = secrets.token_bytes(64)
+    hash_object = hashlib.sha256(random_bytes)
+    return hash_object.hexdigest()
+
+def clean_text(s):
+    # удаление пробелов в начале и конце строки
+    clean_s = s.strip()
+    
+    # приведение строки к нижнему регистру
+    lower_case = clean_s.lower()
+
+    # удаление всех не буквенных и не цифровых символов с использованием регулярных выражений
+    import re
+    only_alphanumeric = re.sub(r'\W+', ' ', lower_case)
+
+    return only_alphanumeric
