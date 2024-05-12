@@ -1,9 +1,7 @@
 
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.graphs.graph_document import GraphDocument, Node,Relationship
+from langchain_community.graphs.graph_document import GraphDocument, Node, Relationship
 from langchain_core.documents.base import Document
 from sklearn.feature_extraction.text import TfidfVectorizer
-from typing import Any, List
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -19,20 +17,12 @@ nltk.download('punkt')
 stop_words = set(stopwords.words('russian'))
 punctuation = set(string.punctuation)
 
-class GrapSplitterTfIdf(RecursiveCharacterTextSplitter):
-    def __init__(self,
-                 separators: List[str] = None, 
-                 keep_separator: bool = True, 
-                 is_separator_regex: bool = False, 
-                 **kwargs: Any) -> None:
-        
-        super().__init__(separators, 
-                         keep_separator, 
-                         is_separator_regex, 
-                         **kwargs)
+class GrapSplitterTfIdf(object):
+    def __init__(self, splitter):
+        self.splitter = splitter
         
         self.nlp_model = spacy.load("ru_core_news_lg")
-        self.ngram_range = (1, 3)
+        self.ngram_range = (1, 6)
         # Определение порога для отбора ключевых слов
         self.threshold = 0.15
         
@@ -48,8 +38,8 @@ class GrapSplitterTfIdf(RecursiveCharacterTextSplitter):
         return " ".join(lemmatized_words)
     
     def split_documents(self, documents, name_docs="document", docs_keywords=[], document_content=""):
-        init_splits = super().split_documents(documents)
-
+     
+        init_splits = self.splitter.split_documents(documents)
         text_chunks =[doc.page_content for doc in init_splits]
         prprocess_text_chunks = [self.preprocess_text(text) for text in text_chunks]
         lemmatized_text_chunks = [self.lemmatize(text) for text in prprocess_text_chunks]
@@ -104,7 +94,7 @@ class GrapSplitterTfIdf(RecursiveCharacterTextSplitter):
             sorted_words = sorted(word_scores.items(), key=lambda item: item[1], reverse=True)
             
             # Берем, например, топ-5 слова с наивысшим весом TF-IDF в качестве ключевых слов
-            document_keywords = [word for word, score in sorted_words[:5]]
+            document_keywords = [word for word, score in sorted_words[:2]]
             
             # Добавляем список ключевых слов для данного документа
             keywords.append(document_keywords)

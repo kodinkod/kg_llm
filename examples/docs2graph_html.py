@@ -6,7 +6,7 @@ sys.path.insert(0, os.getcwd())
 from src.docx2graph.from_docx_structure.utils import build_knowledge_graph, draw_graph, get_triples_from_dcx, get_json_from_graph
 from docx_parser.document_parser import DOCXParser
 
-doc_path="assets/dozor/usage_big.docx"
+doc_path="/Applications/programming/kg_llm/assets/dozor/dozor.docx"
 parser = DOCXParser()
 parser.parse(doc_path)
 

@@ -1,12 +1,12 @@
 import networkx as nx
 
-from src.docx2graph.from_docx_structure.graph_node import Header_node, List_node, Paragraph_node
+from src.docx2graph.from_docx_structure.graph_node import Chunk_node, Header_node, List_node, Paragraph_node, Root_node
 from itertools import chain
 import networkx as nx
 from src.docx2graph.from_docx_structure.js_script_for_graph import header_text, tail_text
 from langchain_community.graphs.graph_document import GraphDocument, Node,Relationship
 from langchain_core.documents.base import Document
-
+import re
 import hashlib
 import secrets
 
@@ -42,84 +42,115 @@ def is_header(t):
 def is_list(t):
     return 'list' in t
 
+def get_style_level(style_name: str):
+    """
+    :param style_name: name of the style
+    :returns: level if style name begins with heading else None
+    """
+    if style_name is None:
+        return None
+    if re.match(r'heading \d', style_name):
+        return int(style_name[len("heading "):]) - 1
+    return None
+
+def extract_style(data):
+    # Используем списковые включения для извлечения кортежей с ключом 'style'
+    styles = [item for item in data if item[0] == 'style']
+
+    # Если есть элементы с ключом 'style', извлекаем первый
+    if styles:
+        style_tuple = styles[0]
+        # Доступ к значению 'style'
+        style_value = style_tuple[3]
+        return style_value
+    else:
+        return None
 
 def get_triples_from_dcx(lines_with_meta, start_level = 0, roots = []):
     triples = [] 
     start=None
     num = 0
-    fective_start = Header_node(lines_with_meta[0]['text'],
-                                lines_with_meta[0]['level'],
+    fective_start = Root_node(lines_with_meta[0]['text'],
+                                (lines_with_meta[0]['level']),
                                 lines_with_meta[0]['uid']) 
-    
     # добавляем fective_start
     roots.append(fective_start)
-    prev_node = fective_start
-    prev_node.level = (-1,-1)
-    
-    prev_paragraph = None
+    prev_node =  Header_node('0', (-1,-1), 0)  # фективный lvl
+    chunk_collector=""
     
     # цикл по всем элементам
     while num < len(lines_with_meta):
         f = False
-        
         #lines_with_meta key: 'text', 'level', 'uid', 'type', 'annotations'
         item = lines_with_meta[num]
-        #print('input: ', item['text'])
-       
     
         # встречаем первый заголовок
         if (start is None) and is_header(item['type']):
-            #print('start', item['text'])
             start =  Header_node(item['text'], item['level'], item['uid']) 
             cur_level = item['level']
             
             if fective_start.text != start.text:
                 triples.append([fective_start, 'contains_root', start])
+                triples.append([fective_start, 'chunk', Chunk_node(chunk_collector, get_random_hash())])
+                chunk_collector=""
                 roots.append(start)
-            prev_paragraph=None #сбросили цепочку прараграфов
         
-        # просто текст под заголовком или список
-        elif not is_header(item['type']):
+        # просто текст под заголовком 
+        elif (not is_list(item['type'])) and (not is_header(item['type'])):
             paragraph = Paragraph_node(item['text'], item['uid'])
-            #print('paragraph', item['text'])
             
-            if prev_paragraph is not None:
-                relation = 'contains_paragraph'
-            else:
-                relation = 'contains_paragraph_start'
-                
             if start is not None:
                 if paragraph.text != start.text:
-                    triples.append([start, relation, paragraph])
+                    triples.append([start, 'contains_paragraph', paragraph])
+                    chunk_collector+=paragraph.text
             else:
                 if paragraph.text != fective_start.text:
-                    triples.append([fective_start, relation, paragraph])
+                    triples.append([fective_start, 'contains_paragraph', paragraph])
+                    chunk_collector+=paragraph.text
+                
+        # встретили список
+        elif (start is not None ) and (not is_header(item['type'])):
+            #prev_node # заголовок списка -  предыдущий прарграф
             
-            if prev_paragraph is not None:
-                triples.append([prev_paragraph, 'next_paragraph', paragraph])
-       
-            prev_paragraph = paragraph
+            # собираем все элементы списка в одну node
+            cur_list_items=[]
+            j=num
+            while j < len(lines_with_meta):
+                if is_list(lines_with_meta[j]['type']):
+                    cur_list_items.append(lines_with_meta[j]['text'] + '\n')
+                    j+=1
+                else:
+                    break
+            num = j-1
+            cur_list_node = List_node("".join(cur_list_items), item['uid'])
+           
+            triples.append([prev_node, "list_contain" ,cur_list_node ])   
+            chunk_collector+=cur_list_node.text 
+            #print("+++++++++++")
+            #print(list_title)
+            #print(cur_list_items)
+            #print("+++++++++++++++")
+            #print()
             
         elif is_header(item['type']): 
             # встретился headr
-            #print('header', item['text'])
-            prev_paragraph=None #сбросили цепочку прараграфов
+            print('header', item['text'])
+            triples.append([start, 'chunk', Chunk_node(chunk_collector, get_random_hash())])
+            chunk_collector=""
             
             if item['level'] > cur_level:
                 new_node_header = Header_node(item['text'], item['level'], item['uid'])
                 
                 triples.append([start, 'contains', new_node_header])
-                #print(f'call for {item["text"]}, lvl {item["level"]}')
                 a, next_point = get_triples_from_dcx(lines_with_meta[num:], roots)
                 triples += a
                 num += next_point
-                #print('end call')
+                print('end call')
                 continue
                 
             else:
                 # заменили главный заголовок
-                #print(f'заменили на {item["text"]}, lvl {item["level"]}')
-            
+
                 # должны найти старт - заголовок который ниже по уровню 
                 # то есть 3й к 2му привязывается
                 # 2й к первомоу 
@@ -130,20 +161,16 @@ def get_triples_from_dcx(lines_with_meta, start_level = 0, roots = []):
                 #print(roots)
                 
                 for rt in roots[::-1]:
-                    #print(rt.level)
                     if rt.level < item['level']:
                         f = True
                         triples.append([rt, 'contains_root', start])
-                        #print('add',[rt.text, 'contains_root', start.text])
                         break  
                 if not f:
                     triples.append([roots[0], 'contains_root', start])
-                    #print('add',[rt.text, 'contains_root', item['text']])
+         
         
-        #print('skip', item['text'])      
-        #print(10*"==")
-        #print(10*"==")
-        prev_node =  Header_node(item['text'], (-1,-1), item['uid'])  # фективный lvl
+
+        prev_node =  Header_node(item['text'], -1, item['uid'])  # фективный lvl
         num+=1
 
     return triples, num
@@ -224,7 +251,7 @@ def draw_graph(name, node_link_data):
             "w", encoding="utf-8") as f: 
         f.write(full_text)
         
-def get_GraphDocument_from_triples(triples, path="usage.docx"):
+def get_GraphDocument_from_triples(triples, r_node, path="usage.docx"):
     """
     Builds a GraphDocument from a list of triples.
 
@@ -239,21 +266,25 @@ def get_GraphDocument_from_triples(triples, path="usage.docx"):
     and assigns the predicate as a label to the edges. The resulting GraphDocument
     captures relationships between subjects and objects in the knowledge domain.
     """
-
     nodes = []
     relationships = []
     for triplet in triples:
         src_text = clean_text(triplet[0].text)
-        target_text = clean_text(triplet[2].text)
         
-        if src_text=="" or target_text =="":
+        # чтобы не терять разметку текста внутри чанка 
+        if isinstance(triplet[2], Chunk_node):
+            target_text = triplet[2].text
+        else:
+            target_text = clean_text(triplet[2].text)
+        
+        if src_text=="" or target_text=="":
             continue
         
-        src = Node(id=triplet[0].text[:100] + triplet[0].id, 
+        src = Node(id=triplet[0].text[:100] + str(triplet[0].id), 
                 type=triplet[0].__class__.__name__, 
                 properties={'text':  src_text})
         
-        target = Node(id=triplet[2].text[:100] + triplet[2].id, 
+        target = Node(id=triplet[2].text[:100] + str(triplet[2].id), 
                     type=triplet[2].__class__.__name__, 
                     properties={'text': target_text})
         
@@ -265,6 +296,17 @@ def get_GraphDocument_from_triples(triples, path="usage.docx"):
                         target=target, 
                         type=triplet[1])
         )
+        relationships.append(
+            Relationship(source=r_node, 
+                        target=target, 
+                        type='pp_contains')
+        )
+        relationships.append(
+            Relationship(source=r_node, 
+                        target=src, 
+                        type='pp_contains')
+        )
+
 
     name = path.replace('/', '-')
     source = Document(page_content=name, metadata={"path": path})

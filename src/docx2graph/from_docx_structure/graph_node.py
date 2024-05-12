@@ -40,3 +40,29 @@ class List_node(Base_node):
                  text: str, 
                  id: str):
         super().__init__(text, id)
+
+@dataclass
+class Chunk_node(Base_node):
+    def __init__(self, 
+                 text: str, 
+                 id: str):
+        super().__init__(text, id)
+
+@dataclass
+class Root_node(Base_node):    
+    def __init__(self, 
+                 text: str,
+                 level: tuple,
+                 id: str):
+        super().__init__(text,  id)
+        
+        self.level = level
+        if self.level is None:
+            self.level = -1
+
+@dataclass
+class PP_node(Base_node):
+    def __init__(self, 
+                 text: str, 
+                 id: str):
+        super().__init__(text, id)
