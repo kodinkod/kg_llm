@@ -42,7 +42,6 @@ def my_app(cfg: DictConfig) -> None:
     for i, doc_path in enumerate(tqdm.tqdm(cfg.file_names_for_rag_eval)):
         print('process: ', doc_path)
         
-        
         # split docs, create graph
         graph_document, _, _ = splitter.split_documents(doc_path, 
                                                   name_docs=doc_path,

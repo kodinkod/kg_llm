@@ -29,8 +29,7 @@ def my_app(cfg: DictConfig) -> None:
     lemmatized_text_chunks = [splitter.lemmatize(text) for text in prprocess_text_chunks]
     documents_keywords = splitter.vectorize_tfidf(lemmatized_text_chunks)
     
-    
-    graph = Neo4jGraph(database='chunk-keyword-exp6')
+    graph = Neo4jGraph(database='chunk-keyword-exp5')
     # clean graph 
     graph.query("MATCH (n) DETACH DELETE n")
 

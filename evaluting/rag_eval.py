@@ -26,8 +26,6 @@ def calculate_bleu(row):
 @hydra.main(version_base=None, config_path="../configs/", config_name="base_rag.yaml")
 def my_app(cfg: DictConfig) -> None:
     # get model
-    
-    
     llm2eval = instantiate(cfg.llm2eval)
     embedding2eval = instantiate(cfg.embedding2eval)
     
@@ -74,9 +72,53 @@ def my_app(cfg: DictConfig) -> None:
     
     test_dataset['bleu_score'] = test_dataset.apply(calculate_bleu, axis=1)
     result['bleu_score'] = test_dataset['bleu_score'].mean()
-
-    print(result)
     
+    # TFIDF
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    def calculate_cosine_similarity_TF_IDF(row):
+        documents = [row['answer'], row['ground_truth']]
+        vectorizer = TfidfVectorizer()
+        matrix = vectorizer.fit_transform(documents)
+        similarity = cosine_similarity(matrix)
+        return similarity[0][1]
+
+
+    # Применение функции к DataFrame
+    test_dataset['cos-sim-TF-IDF'] = test_dataset.apply(calculate_cosine_similarity_TF_IDF, axis=1)
+
+    result['cos-sim-TF-IDF'] = test_dataset['cos-sim-TF-IDF'].mean()
+    
+    # sim-spacy
+    import ssl
+    from nltk.corpus import stopwords
+    import spacy as sp
+
+    # Деактивация проверки сертификатов в NLTK 
+    ssl._create_default_https_context = ssl._create_unverified_context
+    # Загрузка продвинутой модели spaCy
+    nlp = sp.load('ru_core_news_lg')
+    # Загрузка списка стоп-слов для русского языка
+    stop_words = set(stopwords.words("russian"))
+
+    def calculate_similarity_spacy(row):
+
+        doc1 = nlp(preprocess(nlp(row['answer'])))
+        doc2 = nlp(preprocess(nlp(row['ground_truth'])))
+        return doc1.similarity(doc2)
+
+    def preprocess(text):
+        preprocessed_text = [token.lemma_.lower() for token in text if token.lemma_.lower() not in stop_words and token.is_alpha]
+        return ' '.join(preprocessed_text)
+
+
+    # Применение функции к DataFrame
+    test_dataset['sim-spacy'] = test_dataset.apply(calculate_similarity_spacy, axis=1)
+    
+    result['sim-spacy'] = test_dataset['sim-spacy'].mean()
+    
+    print(result)
     with open(f'result_{cfg.name}.json', 'w') as f:
         json.dump(result, f, indent=4)
     

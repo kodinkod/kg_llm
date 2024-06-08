@@ -10,8 +10,6 @@ from docx_parser.document_parser import DOCXParser
 from langchain_core.documents.base import Document
 import tqdm
 
-#tf_idf_splitter_processor = GrapSplitterTfIdf(None)
-
 @hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_init.yaml")
 def my_app(cfg: DictConfig) -> None:
     llm2eval = instantiate(cfg.llm2eval)
@@ -21,7 +19,7 @@ def my_app(cfg: DictConfig) -> None:
     os.environ["NEO4J_PASSWORD"] = cfg.neo4j.NEO4J_PASSWORD
     
     parser = DOCXParser()
-    graph = Neo4jGraph(database='rag-kg-pipeline-new')
+    graph = Neo4jGraph(database='method-3')
     graph.query("MATCH (n) DETACH DELETE n")
     
     # Базовая связь:
@@ -50,6 +48,8 @@ def my_app(cfg: DictConfig) -> None:
     for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
         print('process: ', doc_path)
         parser.parse(doc_path)
+        #if 'other' not in doc_path:
+        #    continue
         
         # проставляем добавленные стили 
         for item in parser.get_lines_with_meta():
@@ -61,7 +61,6 @@ def my_app(cfg: DictConfig) -> None:
         
         r_node=Node(id=doc_path, type="doc", text=doc_path)
         graph_document = get_GraphDocument_from_triples(triples, r_node, doc_path) 
-        
 
         graph.add_graph_documents(
             [graph_document],
@@ -70,30 +69,38 @@ def my_app(cfg: DictConfig) -> None:
         )
         
         for node in graph_document.nodes:
-            if node.type == 'Chunk_node':
+            if node.type in ['Chunk_node', 'Paragraph_node', 'List_node']:
                 # добавляем историяю к тектсу     
                 paths = graph.query(f"MATCH p=(:Root_node)-[*]->(r) WHERE r.id='{node.id}' RETURN p") 
                 
                 # сформируем путь:
                 roots = ""
-                for p in paths[0]['p'][:-1]:
-                    if isinstance(p, dict):
-                        roots=roots+"/"+p['text']
-                roots = roots[1: ]# удалим первый симвл
-                
-                # добавим к тексту путь, откуда был взят этот текст
-                new_text = roots + "\n" + node.properties['text']
+                if len(paths)!=0:
+                    for p in paths[0]['p'][:-1]:
+                        if isinstance(p, dict):
+                            roots=roots+"/"+p['text']
+                    roots = roots[1: ]# удалим первый симвл
+                    
+                    # добавим к тексту путь, откуда был взят этот текст
+                new_text = roots + "<root->" + node.properties['text']
                 
                 # добавляем tl_dr
-                tl_dr = llm2eval.invoke(f"{new_text} TL;DR").content
+                if node.type in ['Chunk_node']:
+                    tl_dr = llm2eval.invoke(f"{new_text} TL;DR").content
+                else:
+                    tl_dr = new_text[:100] # TODO
+                    
+                new_text = new_text.replace("'", "").replace('"', '')
+                tl_dr = tl_dr.replace("'", "").replace('"', '')
                 
                 graph.query(f"""MATCH (p) WHERE p.id='{node.id}' SET 
                             p.roots='{roots}', 
                             p.tl_dr='{tl_dr}', 
                             p.text='{new_text}'
                             """) 
-                
-                
+        
+    graph.query("MATCH (n:Chunk_node) SET n:to_indexing")
+    graph.query("MATCH (n:Paragraph_node) SET n:to_indexing")
     
 if __name__ == "__main__":
     my_app()   

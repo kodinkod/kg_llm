@@ -18,17 +18,7 @@ def main():
             'name': 'gpt-4-turbo-preview'
         }
     })
-    selector_docs = ModelSelector({
-        '1': {
-            'name': 'assets/dozor (all)',
-        },
-        '2': {
-            'name': 'assets/dozor/install.docx',
-        },
-        '3': {
-            'name': 'assets/dozor/usage_big.docx',
-        }
-    })
+
     
     # choice model
     model_name_str = selector_llm.run()
