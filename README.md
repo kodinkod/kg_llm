@@ -26,8 +26,8 @@ poetry shell
 1. We use hydra framework for logging and use cofig.
 2. For use all code we need have connection with neo4j db.
 
-> warning: for use neo4j setup configs/neo4j/base.yaml (in config and .env files).
-> warning: for use openai LLM add all API keys. (in config and .env files).
+> ⚠️ warning: for use neo4j setup configs/neo4j/base.yaml (in config and .env files).
+> for use openai LLM add all API keys. (in config and .env files).
 
 ### Create graph using structure 
 
@@ -35,12 +35,36 @@ Create html page with graph from docx document.
 ```
 python examples/graph_creation/docs2graph_html.py 
 ```
-[text](output/html_graph_pages/Graph_for_group_test.html)
+[Example in output/html_graph_pages/Graph_for_group_test](output/html_graph_pages/Graph_for_group_test.html)
 
 Load in neo4j (default: 'sandbox' database) graph from docx document.
 ```
 python examples/graph_creation/graph_splitter_neo4j_base.py
 ```
 
+### 🚋 GraphRag
+
+```
+python examples/rags/graph_rag.py # usage example  
+python evaluting/test_advanced_graph_rag.py # calculate test set  
+```
+
+### 🥦 BaseRAG
+```
+python examples/rags/base.py # usage example  
+python evaluting/test_base_rag.py # calculate test set  
+```
+
+### 🚀 Evalute RAG
+
+We use Ragas and same custom metrics for evaluate RAG on our custom dataset 
+from `assets/test_set_40.csv` abaut programm products in `assets`.
+
+```
+python evaluting/run_eval.py --config-name=<you-config>
+```
+
+
+## 🚀 Flask web UI 
 
 ![example](example.gif)
