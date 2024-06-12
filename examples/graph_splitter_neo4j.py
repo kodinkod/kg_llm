@@ -1,58 +1,43 @@
 import os
 import hydra
 from omegaconf import DictConfig
-from src.graph_chunks.splitter import GrapSplitterTfIdf
+from langchain_community.graphs.graph_document import Node
+from src.docx2graph.from_docx_structure.utils import  extract_style, get_style_level, get_triples_from_dcx, get_GraphDocument_from_triples
 from langchain_community.graphs import Neo4jGraph
-from langchain_community.document_loaders import Docx2txtLoader
+from docx_parser.document_parser import DOCXParser
 import tqdm
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_tfidf.yaml")
+@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_init.yaml")
 def my_app(cfg: DictConfig) -> None:
-    
     os.environ["NEO4J_URI"] =cfg.neo4j.NEO4J_URI
     os.environ["NEO4J_USERNAME"] = cfg.neo4j.NEO4J_USERNAME
     os.environ["NEO4J_PASSWORD"] = cfg.neo4j.NEO4J_PASSWORD
     
-    splitter = GrapSplitterTfIdf(chunk_size=800, chunk_overlap=200)
-    
-    # vectorize documents
-    # get keywords for documents 
-    documents=[]
-    for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
-        # load docs
-        loader = Docx2txtLoader(doc_path)
-        documents += loader.load()
-    
-    # find keywords in document in documents lvl
-    text_document =[doc.page_content for doc in documents]
-    prprocess_text_chunks = [splitter.preprocess_text(text) for text in text_document]
-    lemmatized_text_chunks = [splitter.lemmatize(text) for text in prprocess_text_chunks]
-    documents_keywords = splitter.vectorize_tfidf(lemmatized_text_chunks)
-    
-    graph = Neo4jGraph(database='chunk-keyword-exp5')
-    # clean graph 
+    parser = DOCXParser()
+    graph = Neo4jGraph(database='sandbox')
     graph.query("MATCH (n) DETACH DELETE n")
-
-    # get keywords for chunks inside documents lvl
-    for i, doc_path in enumerate(tqdm.tqdm(cfg.file_names_for_rag_eval)):
+    
+    for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
         print('process: ', doc_path)
+        parser.parse(doc_path)
+
+        # проставляем добавленные стили 
+        for item in parser.get_lines_with_meta():
+            item['level'] = get_style_level(
+                extract_style(item['annotations'])
+            )
+
+        triples, _ = get_triples_from_dcx(parser.get_lines_with_meta())
         
-        # load docs
-        loader = Docx2txtLoader(doc_path)
-        doc = loader.load()
-        
-        # split docs, create graph
-        graph_document, _, _ = splitter.split_documents(doc, 
-                                                  name_docs=doc_path,
-                                                  docs_keywords=documents_keywords[i], 
-                                                  document_content=text_document[i])
-        
+        r_node=Node(id=doc_path, type="doc", text=doc_path)
+        graph_document = get_GraphDocument_from_triples(triples, r_node, doc_path) 
+
         graph.add_graph_documents(
             [graph_document],
             baseEntityLabel=True,
             include_source=True
         )
-    
+        
+
 if __name__ == "__main__":
-    my_app()   
-    
+    my_app()
