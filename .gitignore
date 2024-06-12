@@ -169,5 +169,4 @@ assets/*
 assets/other/гендальф.docx
 outputs/*
 PRODUCTION/*
-*.csv
 .DS_Store
