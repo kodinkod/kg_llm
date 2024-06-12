@@ -247,7 +247,7 @@ def draw_graph(name, node_link_data):
 
     full_text = header_text + middle_text + tail_text
 
-    with open(f"Graph_for_group_{name}.html",
+    with open(f"output/html_graph_pages/Graph_for_group_{name}.html",
             "w", encoding="utf-8") as f: 
         f.write(full_text)
         
