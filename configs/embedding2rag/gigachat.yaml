@@ -1,4 +1,4 @@
 _target_: langchain_community.embeddings.gigachat.GigaChatEmbeddings
 verify_ssl_certs: False
 scope: "GIGACHAT_API_PERS"
-credentials: "Y2Y0Yjg5OGQtMTBhMi00ZjYwLWIyYTUtY2U5YTY0ODhhYWM5OjUwMTA5YjYzLTMxYjgtNDhiZS1hNTE2LTBkMzkwN2FjNTNjZA=="
+credentials: ""
