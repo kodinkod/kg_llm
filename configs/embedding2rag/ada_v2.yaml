@@ -1,3 +1,3 @@
 _target_: langchain_openai.OpenAIEmbeddings
-openai_api_key: "sk-kFANI4tptQfVJAZKpbRxDNBVODFDrOdk"
+openai_api_key: ""
 openai_api_base: "https://api.proxyapi.ru/openai/v1"
