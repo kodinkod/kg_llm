@@ -41,8 +41,6 @@ class BaseRAGChain():
         
         return self.splits_docs
     
-    
-    
     def __call__(self, questions) -> Any:
         return self.rag_chain.invoke(questions)
     
