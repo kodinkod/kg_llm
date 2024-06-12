@@ -1,6 +1,5 @@
 defaults:
-  - neo4j: kg_llm
-  - llm2rag: gigachat_lite_plus
+  - neo4j: base
   - llm2eval: gpt35_turbo
 
 file_names_for_rag_eval:

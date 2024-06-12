@@ -7,6 +7,10 @@ from langchain_community.graphs import Neo4jGraph
 from docx_parser.document_parser import DOCXParser
 import tqdm
 
+"""
+Create Neo4j graph from docx files structure.
+"""
+
 @hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_init.yaml")
 def my_app(cfg: DictConfig) -> None:
     os.environ["NEO4J_URI"] =cfg.neo4j.NEO4J_URI

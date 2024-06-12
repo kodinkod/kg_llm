@@ -1,38 +1,26 @@
-from langchain_openai import ChatOpenAI
-from src.cmd_selector.selector import ModelSelector
-
 import os
-
+import hydra
+from hydra.utils import instantiate
+from omegaconf import DictConfig
+import tqdm
 from src.docx2graph.from_llm.creator_pipeline import GraphLLMCreatorPipeline
-os.environ["NEO4J_URI"] ="bolt://localhost:7687"
-os.environ["NEO4J_USERNAME"] = "kodin"
-os.environ["NEO4J_PASSWORD"] = "12345678"
-os.environ["OPENAI_API_KEY"] = "sk-kFANI4tptQfVJAZKpbRxDNBVODFDrOdk"
 
-def main():
-    selector_llm = ModelSelector({
-        '1': {
-            'name': 'gpt-3.5-turbo-0125'
-        },
-        '2':{
-            'name': 'gpt-4-turbo-preview'
-        }
-    })
+"""
+create graph from docx using LLM.
+"""
 
+@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_llm_neo4j.yaml")
+def main(cfg: DictConfig):
+    os.environ["NEO4J_URI"] =cfg.neo4j.NEO4J_URI
+    os.environ["NEO4J_USERNAME"] = cfg.neo4j.NEO4J_USERNAME
+    os.environ["NEO4J_PASSWORD"] = cfg.neo4j.NEO4J_PASSWORD
     
-    # choice model
-    model_name_str = selector_llm.run()
-    print(model_name_str)
-    model=ChatOpenAI(model_name=model_name_str, base_url='https://api.proxyapi.ru/openai/v1') 
-    
-    # choice docs
-    docs_path = selector_docs.run()
-    save_type = input('neo4j?[y/N]')
-        
-    # create graph
-    pipeline = GraphLLMCreatorPipeline(llm=model, documents_path=docs_path)    
-    doc_сhunks=pipeline.parse_documents(chunk_size=512, chunk_overlap=24)
-    res_graph = pipeline.load_in_graph(doc_сhunks, db_name='gpt35-usage-big', save_type=save_type)
+    model=instantiate(cfg.llm2eval)
+    for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
+        save_type = input(f'Add {doc_path} to neo4j?[Y/N]:')
+        pipeline = GraphLLMCreatorPipeline(llm=model, documents_path=doc_path)    
+        doc_сhunks=pipeline.parse_documents(chunk_size=512, chunk_overlap=100)
+        _ = pipeline.load_in_graph(doc_сhunks, db_name='sandbox', save_type=save_type)
     
     print('Done!')
     

@@ -2,7 +2,6 @@ import os
 import hydra
 from omegaconf import DictConfig
 from hydra.utils import instantiate
-from src.docx2graph.from_docx_structure.graph_node import Chunk_node, PP_node
 from langchain_community.graphs.graph_document import GraphDocument, Node,Relationship
 from src.docx2graph.from_docx_structure.utils import  extract_style, get_style_level, get_triples_from_dcx, get_GraphDocument_from_triples
 from langchain_community.graphs import Neo4jGraph
@@ -10,7 +9,12 @@ from docx_parser.document_parser import DOCXParser
 from langchain_core.documents.base import Document
 import tqdm
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_init.yaml")
+"""
+upgrade Neo4j graph from docx files structure. 
+develop from graph_splitter_neo4j_base.py
+"""
+
+@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_advanced_neo4j.yaml")
 def my_app(cfg: DictConfig) -> None:
     llm2eval = instantiate(cfg.llm2eval)
     
@@ -19,7 +23,7 @@ def my_app(cfg: DictConfig) -> None:
     os.environ["NEO4J_PASSWORD"] = cfg.neo4j.NEO4J_PASSWORD
     
     parser = DOCXParser()
-    graph = Neo4jGraph(database='method-3')
+    graph = Neo4jGraph(database='sandbox')
     graph.query("MATCH (n) DETACH DELETE n")
     
     # Базовая связь:
@@ -48,9 +52,7 @@ def my_app(cfg: DictConfig) -> None:
     for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
         print('process: ', doc_path)
         parser.parse(doc_path)
-        #if 'other' not in doc_path:
-        #    continue
-        
+
         # проставляем добавленные стили 
         for item in parser.get_lines_with_meta():
             item['level'] = get_style_level(

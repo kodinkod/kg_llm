@@ -1,6 +1,7 @@
 defaults:
-  - neo4j: kg_llm
-  - llm2eval: gpt35_turbo 
+  - neo4j: base
+  - llm2rag: gigachat_lite_plus
+  - llm2eval: gpt35_turbo
 
 file_names_for_rag_eval:
   - "assets/dozor/dozor.docx"

@@ -13,6 +13,7 @@ defaults:
 name: "base_rag"
 
 test_set_path: "assets/test_set_40.csv"
+from_exist_answer: "output/base_rag/test_base_rag.csv"
 
 file_names_for_rag_eval:
   - "assets/скан-архив/install_and_settings.docx"
