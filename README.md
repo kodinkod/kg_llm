@@ -55,7 +55,7 @@ python examples/rags/base.py # usage example
 python evaluting/test_base_rag.py # calculate test set  
 ```
 
-### 🚀 Evalute RAG
+### 🔫 Evalute RAG
 
 We use Ragas and same custom metrics for evaluate RAG on our custom dataset 
 from `assets/test_set_40.csv` abaut programm products in `assets`.
@@ -68,3 +68,8 @@ python evaluting/run_eval.py --config-name=<you-config>
 ## 🚀 Flask web UI 
 
 ![example](example.gif)
+
+   ```bash
+    cd web_ui
+    flask run
+   ```
