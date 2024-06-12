@@ -34,6 +34,7 @@ hydra-core = "^1.3.2"
 scikit-learn = "^1.4.2"
 spacy = "^3.7.4"
 wrapt = "^1.16.0"
+faiss-cpu = "^1.8.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.4"
