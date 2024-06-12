@@ -1,17 +1,20 @@
-from bs4 import BeautifulSoup
 from typing import Optional
+
+from bs4 import BeautifulSoup
 
 from docx_parser.data_structures.base_props import BaseProperties
 from docx_parser.data_structures.run import Run
-from docx_parser.extractors.properties_extractor import change_paragraph_properties, change_run_properties
+from docx_parser.extractors.properties_extractor import (
+    change_paragraph_properties, change_run_properties)
 
 
 class Paragraph(BaseProperties):
-
-    def __init__(self,
-                 xml: BeautifulSoup,
-                 styles_extractor: "StylesExtractor",
-                 numbering_extractor: "NumberingExtractor"):
+    def __init__(
+        self,
+        xml: BeautifulSoup,
+        styles_extractor: "StylesExtractor",
+        numbering_extractor: "NumberingExtractor",
+    ):
         """
         contains information about paragraph properties
         :param xml: BeautifulSoup tree with paragraph properties
@@ -50,7 +53,7 @@ class Paragraph(BaseProperties):
         # 3) paragraph styles
         # 4) numbering styles within styles_extractor
         if self.xml.pStyle:
-            self.styles_extractor.parse(self.xml.pStyle['w:val'], self, "paragraph")
+            self.styles_extractor.parse(self.xml.pStyle["w:val"], self, "paragraph")
 
         # 5) character style parsed later for each run
         # 6) paragraph direct formatting
@@ -84,11 +87,13 @@ class Paragraph(BaseProperties):
         """
         makes runs of the paragraph and adds them to the paragraph list
         """
-        run_list = self.xml.find_all('w:r')
+        run_list = self.xml.find_all("w:r")
         for run_tree in run_list:
             new_run = Run(self, self.styles_extractor)
             if run_tree.rStyle:
-                self.styles_extractor.parse(run_tree.rStyle['w:val'], new_run, "character")
+                self.styles_extractor.parse(
+                    run_tree.rStyle["w:val"], new_run, "character"
+                )
                 if self.xml.pPr and self.xml.pPr.rPr:
                     change_run_properties(new_run, self.xml.pPr.rPr)
             if run_tree.rPr:

@@ -27,7 +27,11 @@ class Neo4jConnection:
         response = None
         try:
             # Get a session to the database using the specified database name
-            session = self.driver.session(database=db) if db is not None else self.driver.session()
+            session = (
+                self.driver.session(database=db)
+                if db is not None
+                else self.driver.session()
+            )
             # Run the query and get the results
             response = list(session.run(query))
         except Exception as e:

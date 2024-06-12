@@ -1,5 +1,5 @@
-#https://github.com/Daniil193/Simple_KG/blob/master/script_for_graph.py
-# дополнительные переменные текста для построение html страницы 
+# https://github.com/Daniil193/Simple_KG/blob/master/script_for_graph.py
+# дополнительные переменные текста для построение html страницы
 
 header_text = r"""<!doctype html>
                   <html lang="ru">
@@ -27,18 +27,18 @@ header_text = r"""<!doctype html>
                           border: 1px solid lightgray;
                       }
                       table, td,th {
-                        border: 1px solid black; 
+                        border: 1px solid black;
                         border-collapse: collapse;
                       }
                     </style>
                     </head>
                     <body>
-                    
+
                     <div class="parent">
                         <div id="mynetwork"></div>
                         <div id="all_information"></div>
                     </div>
-                    
+
                     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css">
                     <script src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
                     <script>"""
@@ -52,7 +52,7 @@ tail_text = """
       var options = {
         "physics":{
           "barnesHut":{
-            "gravitationalConstant": -4000, 
+            "gravitationalConstant": -4000,
             "springConstant": 0.006,
             "damping":0.2
           },
@@ -71,12 +71,12 @@ tail_text = """
         if (clickedNodes.length==0 & clickedEdges.length==0){
             console.log("")
             } else {
-                    clickedObject = clickedEdges[0] 
+                    clickedObject = clickedEdges[0]
                     var total_sum_by_doctype = clickedObject['info'];
                     var tsbd_labels = Object.keys(total_sum_by_doctype);
                     var tsbd_values = Object.values(total_sum_by_doctype);
                     createTable(tsbd_labels, tsbd_values);
-                    } 
+                    }
     });
 
     function createTable(labels, values){
