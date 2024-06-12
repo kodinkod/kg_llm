@@ -11,7 +11,7 @@ from docx_parser.document_parser import DOCXParser
 create graph from docx using docx structure and create html graph.
 """
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_html.yaml")
+@hydra.main(version_base=None, config_path="../../configs/", config_name="docx2graph_html.yaml")
 def main(cfg: DictConfig):
     for doc_path in tqdm.tqdm(cfg.file_names_for_rag_eval):
         parser = DOCXParser()

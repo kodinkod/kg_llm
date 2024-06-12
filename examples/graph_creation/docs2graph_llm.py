@@ -9,7 +9,7 @@ from src.docx2graph.from_llm.creator_pipeline import GraphLLMCreatorPipeline
 create graph from docx using LLM.
 """
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_llm_neo4j.yaml")
+@hydra.main(version_base=None, config_path="../../configs/", config_name="docx2graph_llm_neo4j.yaml")
 def main(cfg: DictConfig):
     os.environ["NEO4J_URI"] =cfg.neo4j.NEO4J_URI
     os.environ["NEO4J_USERNAME"] = cfg.neo4j.NEO4J_USERNAME

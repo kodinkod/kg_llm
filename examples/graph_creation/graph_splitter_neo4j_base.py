@@ -11,7 +11,7 @@ import tqdm
 Create Neo4j graph from docx files structure.
 """
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_init.yaml")
+@hydra.main(version_base=None, config_path="../../configs/", config_name="docx2graph_neo4j.yaml")
 def my_app(cfg: DictConfig) -> None:
     os.environ["NEO4J_URI"] =cfg.neo4j.NEO4J_URI
     os.environ["NEO4J_USERNAME"] = cfg.neo4j.NEO4J_USERNAME

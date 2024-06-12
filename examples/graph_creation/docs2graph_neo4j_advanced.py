@@ -14,7 +14,7 @@ upgrade Neo4j graph from docx files structure.
 develop from graph_splitter_neo4j_base.py
 """
 
-@hydra.main(version_base=None, config_path="../configs/", config_name="docx2graph_advanced_neo4j.yaml")
+@hydra.main(version_base=None, config_path="../../configs/", config_name="docx2graph_advanced_neo4j.yaml")
 def my_app(cfg: DictConfig) -> None:
     llm2eval = instantiate(cfg.llm2eval)
     
