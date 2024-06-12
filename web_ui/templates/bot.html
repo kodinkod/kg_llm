@@ -1,0 +1,190 @@
+{% extends 'index.html' %}
+{% block setting_form %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title"> Настройки </h3>
+    </div>
+    <div class="panel-body">
+      <form class="form-horizontal" action="/setup/" method="post" >
+
+        <div class="col-xs-6 col-md-4">
+          <label for="documentInput" class="form-label">Выберите документы</label>
+          <select name="dataSelect" class="form-control form-control-sm" id="dataSelect">
+            <option value="base" selected>все документы ПП</option>
+          </select>
+        </div>
+
+        <div class="col-xs-6 col-md-4">
+          <label for="languageModelSelect" class="form-label">Выберите языковую модель</label>
+          <select name="languageModelSelect" class="form-control form-control-sm" id="languageModelSelect">
+
+            <option value="gpt-3.5-turbo-0125">gpt-3.5-turbo-0125</option>
+          </select>
+        </div>
+
+        <div class="col-xs-6 col-md-4">
+          <label  for="methodSelect" class="form-label">Выберите способ</label>
+          <select name="methodSelect" class="form-control form-control-sm" id="methodSelect">
+            <option value="base" selected >базовый RAG</option>
+            <option value="graph_rag">GraphRAG</option>
+          </select>
+        </div>
+
+        <div class="col-md-12">
+          <hr>
+        </div>
+
+        <div class="col-md-12">
+        <button type="submit" class="btn btn-primary">Проиндексировать</button>
+        </div>
+
+        <div class="col-md-12">
+          <hr>
+        </div>
+
+        <div class="col-md-12">
+        <h3 class="panel-title"> Настройки в работе: </h3>
+        <p class="bg-success">
+          {{info_pipeline}}
+        </p>
+        </div>
+        
+      </form>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block botform %}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Бот</h3>
+    </div>
+    <div class="panel-body">
+
+      <form class="form-horizontal" action="/chat/" method="post">
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-8">
+            <input type="text" name = "question" class="form-control" placeholder="Как сделать..">
+        </div>
+        <div class="col-xs-6 col-md-4">
+            <button name="runchat" type="submit" type="button" class="btn btn-success ">спросить</button>
+        </div>
+        <div class="col-xs-6 col-md-4">
+          <span class="label label-info">{{model_name}}</span>
+        </div>
+      </div>
+      </form>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block allanswers %}
+
+
+<h3> {{questions}} </h3>
+<p style="padding-left: 25px; padding-right: 25px; padding-top: 40px; padding-bottom: 20px; font-size: larger;" class="bg-success">
+  {{answer_content}}
+</p>
+
+<!-- graph view -->
+<script src="https://unpkg.com/vis@7.6.10/dist/vis-network.min.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script>
+  fetch('/graph-data')
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+         // Инициализируем данные графа для vis.js
+         var graphData = {
+          nodes: new vis.DataSet(data.nodes),
+          edges: new vis.DataSet(data.edges)
+      };
+      var options = {
+        nodes: {
+          shape: 'box', // 'box' shape поддерживает перенос текста
+          margin: 10, // Отступ внутри узла
+          widthConstraint: {
+              maximum: 150 // Максимальная ширина узла
+          },
+          font: {
+              multi: 'html' // Позволяет использовать HTML-форматирование для текста узла
+          }
+      },
+      edges: {
+        length: 300, // Установка предпочтительной длины ребра (влияет на расстояние между узлами)
+        arrows: {
+            to: {
+                enabled: true, // Включение стрелки на конце ребра, указывающей к узлу-назначению
+                scaleFactor: 1 // Масштабирование размера стрелки (1 - стандартный размер)
+            }
+        },
+        font: {
+            align: 'top' // Выравнивание подписей рёбер по отношению к ребру
+        },
+        smooth: { // Сглаживание рёбер может улучшить визуальное расстояние
+            type: 'continuous'
+        }
+      },
+      physics: {
+        enabled: true, // Включить физический движок
+        barnesHut: {
+            gravitationalConstant: -2000,
+            centralGravity: 0.3,
+            springLength: 95,
+            springConstant: 0.04,
+            damping: 0.09,
+            avoidOverlap: 0.1 // Параметр, предотвращающий перекрытие узлов
+        },
+        solver: 'barnesHut'
+      },
+      layout: {
+        hierarchical: {
+          enabled: true,
+          levelSeparation: 250,
+          nodeSpacing: 100,
+          treeSpacing: 300,
+          blockShifting: true,
+          edgeMinimization: true,
+          parentCentralization: true,
+          direction: 'UD',   // Направление расположения дерева: UD - с верху вниз, DU - снизу вверх, LR - слева направо, RL - справа налево
+          sortMethod: 'hubsize' // Метод сортировки: hubsize, directed
+        }
+      },
+      };
+      var network = new vis.Network(document.getElementById('graph'), graphData, options);
+  })
+  .catch(error => {
+      console.error('There has been a problem with your fetch operation:', error);
+  });
+</script>
+
+{% if is_graph %}
+<div id="graph" style="width: 100%; height: 700px; border: 2px solid green;">
+</div>
+{% endif %}
+
+<h2>Найденные Чанки</h2>
+
+{%for i in range(0, len_context)%}
+
+  <p style="padding-left: 25px; padding-right: 25px; padding-top: 40px; padding-bottom: 20px; font-size: larger;" class="bg-warning">
+  <b>{{context[i]}}</b><br>
+  </p>
+
+{%endfor%}
+
+
+
+
+{% endblock %}
+
