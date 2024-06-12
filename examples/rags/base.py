@@ -33,12 +33,13 @@ BASERAG = BaseRAGChain(
     prompt = PROMPT,
     vector_strore=FAISS
 )
-print('Loading documents:')
-documents = load_docs()
-BASERAG.chanking_data(documents)
-BASERAG.collect_chain()
 
-print('complete')
-
-print('Question: Что такое дозор?')
-print('Answer: ',BASERAG('Что такое дозор'))
+if __name__ == "__main__":
+    print('Loading documents:')
+    documents = load_docs()
+    BASERAG.chanking_data(documents)
+    BASERAG.collect_chain()
+    print('complete')
+    
+    print('Question: Что такое дозор?')
+    print('Answer: ',BASERAG('Что такое дозор'))

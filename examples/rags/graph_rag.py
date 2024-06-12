@@ -36,5 +36,7 @@ retriever = vector_index.as_retriever(search_kwargs={'k': 10})
 GRAPHRAG = GraphRAGChain(llm=llm_gpt, retriever=retriever, graph=graph, prompt=prompt)
 GRAPHRAG.collect_chain()
 
-print('Question: Что такое дозор?')
-print('Answer: ',GRAPHRAG('Что такое дозор')['answer'])
+
+if __name__ == "__main__":
+    print('Question: Что такое дозор?')
+    print('Answer: ',GRAPHRAG('Что такое дозор')['answer'])
