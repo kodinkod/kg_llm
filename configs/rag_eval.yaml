@@ -1,7 +1,7 @@
 defaults:
   - _self_
   - llm2eval: gpt35_turbo
-  - embedding2eval: ada_v2 
+  - embedding2eval: ada_v2
 
 name: "base_rag"
 from_exist_answer: "output/base_rag/test_base_rag.csv"

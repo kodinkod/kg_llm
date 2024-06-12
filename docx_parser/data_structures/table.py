@@ -10,9 +10,7 @@ from docx_parser.extractors.styles_extractor import StylesExtractor
 
 
 class DocxTable:
-    def __init__(self,
-                 xml: BeautifulSoup,
-                 styles_extractor: "StylesExtractor") -> None:
+    def __init__(self, xml: BeautifulSoup, styles_extractor: "StylesExtractor") -> None:
         """
         contains information about table properties
         :param xml: BeautifulSoup tree with table properties
@@ -79,7 +77,7 @@ class DocxTable:
                 run = Run(None, self.styles_extractor)
                 run.get_text(run_bs)
                 cell_text += run.text
-            cell_text += '\n'
+            cell_text += "\n"
         if cell_text:
             cell_text = cell_text[:-1]  # remove \n in the end
         return cell_text
@@ -96,7 +94,9 @@ class DocxTable:
             table_grid.append(int(grid_col["w:w"]))
         return table_grid
 
-    def __get_table_cell_width(self, tcw: BeautifulSoup, table_width: int, current_width: int = 0) -> int:
+    def __get_table_cell_width(
+        self, tcw: BeautifulSoup, table_width: int, current_width: int = 0
+    ) -> int:
         """
         returns position of the next column in Twentieths of a Point
         (sums with previous cell widths)
@@ -135,9 +135,11 @@ if __name__ == "__main__":
                 continue
             filename = os.path.join(test_dir, filename)
             document = zipfile.ZipFile(filename)
-            document_bs = BeautifulSoup(document.read('word/document.xml'), 'xml')
+            document_bs = BeautifulSoup(document.read("word/document.xml"), "xml")
             tbls = document_bs.find_all("w:tbl")
-            styles_extractor = StylesExtractor(BeautifulSoup(document.read('word/styles.xml'), 'xml'))
+            styles_extractor = StylesExtractor(
+                BeautifulSoup(document.read("word/styles.xml"), "xml")
+            )
             tables = []
             for tbl in tbls:
                 table = DocxTable(tbl, styles_extractor)
@@ -148,4 +150,4 @@ if __name__ == "__main__":
                 for row in table:
                     print(row, file=f)
             i += 1
-            print(f"\r{i} objects are processed...", end='', flush=True)
+            print(f"\r{i} objects are processed...", end="", flush=True)

@@ -14,27 +14,24 @@ from docx_parser.extractors.styles_extractor import StylesExtractor
 
 
 class DOCXParser:
-
     def __init__(self):
         self.__init_structures()
 
-    def can_parse(self,
-                  filename: str) -> bool:
+    def can_parse(self, filename: str) -> bool:
         """
         checks if DOCXParser can parse file with filename path
         :param filename: path to the file for checking
         """
         return filename.endswith(".docx")
 
-    def parse(self,
-              filename: str) -> None:
+    def parse(self, filename: str) -> None:
         """
         parses document into paragraphs and runs, extracts text for each run and paragraph and it's metadata
         :param filename: name of the .docx file
         """
         self.__init_structures()
         if not self.can_parse(filename):
-            raise ValueError('it is not .docx file')
+            raise ValueError("it is not .docx file")
         with open(filename, "rb") as file_doc:
             file_hash = hashlib.md5()
             chunk = file_doc.read(8192)
@@ -45,16 +42,22 @@ class DOCXParser:
 
         document = zipfile.ZipFile(filename)
         try:
-            self.document_bs = BeautifulSoup(document.read('word/document.xml'), 'xml')
+            self.document_bs = BeautifulSoup(document.read("word/document.xml"), "xml")
         except KeyError:
             try:
-                self.document_bs = BeautifulSoup(document.read('word/document2.xml'), 'xml')
+                self.document_bs = BeautifulSoup(
+                    document.read("word/document2.xml"), "xml"
+                )
             except KeyError:
                 return
-        self.styles_extractor = StylesExtractor(BeautifulSoup(document.read('word/styles.xml'), 'xml'))
+        self.styles_extractor = StylesExtractor(
+            BeautifulSoup(document.read("word/styles.xml"), "xml")
+        )
         try:
-            self.numbering_extractor = NumberingExtractor(BeautifulSoup(document.read('word/numbering.xml'), 'xml'),
-                                                          self.styles_extractor)
+            self.numbering_extractor = NumberingExtractor(
+                BeautifulSoup(document.read("word/numbering.xml"), "xml"),
+                self.styles_extractor,
+            )
             self.styles_extractor.numbering_extractor = self.numbering_extractor
         except KeyError:
             self.numbering_extractor = None
@@ -70,18 +73,25 @@ class DOCXParser:
         if not body:
             return
         for paragraph in body:
-            if paragraph.name == 'tbl':
+            if paragraph.name == "tbl":
                 continue
-            if paragraph.name != 'p':
+            if paragraph.name != "p":
                 # w:docPartGallery w:val="Table of Contents"
-                child_paragraph_list = paragraph.find_all('w:p')
+                child_paragraph_list = paragraph.find_all("w:p")
                 for child_paragraph in child_paragraph_list:
-                    self.paragraph_list.append(Paragraph(child_paragraph,
-                                                         self.styles_extractor, self.numbering_extractor))
+                    self.paragraph_list.append(
+                        Paragraph(
+                            child_paragraph,
+                            self.styles_extractor,
+                            self.numbering_extractor,
+                        )
+                    )
                     self.paragraph_xml_list.append(child_paragraph)
                 continue
 
-            self.paragraph_list.append(Paragraph(paragraph, self.styles_extractor, self.numbering_extractor))
+            self.paragraph_list.append(
+                Paragraph(paragraph, self.styles_extractor, self.numbering_extractor)
+            )
             self.paragraph_xml_list.append(paragraph)
 
     def get_lines(self) -> List[str]:
@@ -114,8 +124,8 @@ class DOCXParser:
         for paragraph in self.paragraph_list:
             paragraph_properties = ParagraphInfo(paragraph)
             line_with_meta = paragraph_properties.get_info()
-            if line_with_meta['text']:
-                line_with_meta['uid'] = f"{self.hash}_{line_with_meta['uid']}"
+            if line_with_meta["text"]:
+                line_with_meta["uid"] = f"{self.hash}_{line_with_meta['uid']}"
                 lines_with_meta.append(line_with_meta)
         self.lines_with_meta = lines_with_meta
         return lines_with_meta
@@ -141,10 +151,10 @@ class DOCXParser:
 
 
 if __name__ == "__main__":
-    test_dir = '../examples/test/docx'
+    test_dir = "../examples/test/docx"
     # examples_dir = '../examples'
-    examples_dir = '/Users/anastasiabogatenkova/Downloads/'
-    choice = input('')
+    examples_dir = "/Users/anastasiabogatenkova/Downloads/"
+    choice = input("")
     if choice == "test":
         filenames = os.listdir(test_dir)
     else:
@@ -174,11 +184,11 @@ if __name__ == "__main__":
                     file = write_file
                     print(f"\n\n\n\n\n{filename}\n\n\n", file=file)
                 for line in lines_info:
-                    print(line['text'], file=file)
+                    print(line["text"], file=file)
                     print(f"Annotations: {line['annotations']}", file=file)
 
-                if choice == 'test':
-                    print(f"\r{i} objects are processed...", end='', flush=True)
+                if choice == "test":
+                    print(f"\r{i} objects are processed...", end="", flush=True)
                 if i % 100 == 0:
                     end = time.time()
                     print(f"current time for docs processing = {end - start}")

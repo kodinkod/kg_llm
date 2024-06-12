@@ -1,17 +1,16 @@
-from typing import Optional, List
 import re
+from typing import List, Optional
 
 from bs4 import BeautifulSoup
 
 from docx_parser.data_structures.base_props import BaseProperties
 from docx_parser.data_structures.run import Run
-from docx_parser.extractors.properties_extractor import change_paragraph_properties, change_run_properties
+from docx_parser.extractors.properties_extractor import (
+    change_paragraph_properties, change_run_properties)
 
 
 class StylesExtractor:
-
-    def __init__(self,
-                 xml: BeautifulSoup):
+    def __init__(self, xml: BeautifulSoup):
         """
         :param xml: BeautifulSoup tree with styles
         """
@@ -25,30 +24,31 @@ class StylesExtractor:
         # extract information from docDefaults
         # docDefaults: rPrDefault + pPrDefault
         self.doc_defaults = self.styles.docDefaults
-        self.default_style = self.styles.find_all('w:style', attrs={'w:default': "1", 'w:type': "paragraph"})
+        self.default_style = self.styles.find_all(
+            "w:style", attrs={"w:default": "1", "w:type": "paragraph"}
+        )
         if self.default_style:
             self.default_style = self.default_style[0]
         else:
             self.default_style = None
 
-    def _find_style(self,
-                    style_id: str,
-                    style_type: str) -> Optional[BeautifulSoup]:
+    def _find_style(self, style_id: str, style_type: str) -> Optional[BeautifulSoup]:
         """
         finds style tree with given style_id and style_type
         :param style_id: styleId for given style
         :param style_type: "paragraph" or "character"
         :return: None if there isn't such style else BeautifulSoup tree with style
         """
-        styles = self.styles.find_all('w:style', attrs={'w:styleId': style_id, 'w:type': style_type})
+        styles = self.styles.find_all(
+            "w:style", attrs={"w:styleId": style_id, "w:type": style_type}
+        )
         if styles:
             return styles[0]
         return None
 
-    def parse(self,
-              style_id: Optional[str],
-              old_properties: BaseProperties,
-              style_type: str):
+    def parse(
+        self, style_id: Optional[str], old_properties: BaseProperties, style_type: str
+    ):
         """
         if style_id is None finds default style
         else finds style with given style_id and changes
@@ -88,26 +88,32 @@ class StylesExtractor:
                 old_properties.style_name = name["w:val"].lower()
             else:
                 old_properties.style_name = style_id.lower()
-            old_properties.style_level = self._get_style_level(old_properties.style_name)
+            old_properties.style_level = self._get_style_level(
+                old_properties.style_name
+            )
 
         styles = self._get_styles_hierarchy(style, style_type)
 
         self._apply_styles(old_properties, styles)
 
         # information in numPr for styles
-        if style.numPr and self.numbering_extractor and hasattr(old_properties, "xml") and \
-                not old_properties.xml.numPr and not ignore_num:
+        if (
+            style.numPr
+            and self.numbering_extractor
+            and hasattr(old_properties, "xml")
+            and not old_properties.xml.numPr
+            and not ignore_num
+        ):
             try:
                 numbering_run = Run(old_properties, self)
                 self.numbering_extractor.parse(style, old_properties, numbering_run)
-                if hasattr(old_properties, 'runs'):
+                if hasattr(old_properties, "runs"):
                     old_properties.runs.append(numbering_run)
             except KeyError as error:
                 print(error)
 
     @staticmethod
-    def _apply_styles(old_properties: BaseProperties,
-                      styles: List[BeautifulSoup]):
+    def _apply_styles(old_properties: BaseProperties, styles: List[BeautifulSoup]):
         """
         applies all styles to old_properties
         :param old_properties: properties for changing
@@ -120,9 +126,9 @@ class StylesExtractor:
             if current_style.rPr:
                 change_run_properties(old_properties, current_style.rPr)
 
-    def _get_styles_hierarchy(self,
-                              style: BeautifulSoup,
-                              style_type: str) -> List[BeautifulSoup]:
+    def _get_styles_hierarchy(
+        self, style: BeautifulSoup, style_type: str
+    ) -> List[BeautifulSoup]:
         """
         makes the list with styles hierarchy
         :param style: the first style in the hierarchy
@@ -133,7 +139,7 @@ class StylesExtractor:
         current_style = style
         while current_style.basedOn:
             try:
-                parent_style_id = current_style.basedOn['w:val']
+                parent_style_id = current_style.basedOn["w:val"]
                 current_style = self._find_style(parent_style_id, style_type)
                 if current_style:
                     styles.append(current_style)
@@ -148,6 +154,6 @@ class StylesExtractor:
         :param style_name: name of the style
         :returns: level if style name begins with heading else None
         """
-        if re.match(r'heading \d', style_name):
-            return int(style_name[len("heading "):]) - 1
+        if re.match(r"heading \d", style_name):
+            return int(style_name[len("heading ") :]) - 1
         return None
