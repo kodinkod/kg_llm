@@ -168,7 +168,6 @@ assets/dozor/*
 assets/*
 assets/other/гендальф.docx
 outputs/*
-*.ipynb
 PRODUCTION/*
 *.csv
 .DS_Store
