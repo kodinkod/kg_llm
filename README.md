@@ -69,3 +69,7 @@ python evaluting/run_eval.py --config-name=<you-config>
 
 ![example](example.gif)
 
+   ```bash
+    cd web_ui
+    flask run
+   ```
