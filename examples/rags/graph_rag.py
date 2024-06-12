@@ -11,7 +11,7 @@ load_dotenv('examples/rags/.env')
 
 
 # use database create from: docs2graph_neo4j_advanced
-DATABASE_NAME = 'method-3'
+DATABASE_NAME = 'sandbox'
 
 prompt = ChatPromptTemplate.from_template("""Вы являетесь помощником в выполнении заданий по поиску ответов на вопросы. Используйте приведенные ниже фрагменты извлеченного контекста, чтобы ответить на вопрос. Если вы не знаете ответа, просто скажите, что вы не знаете. 
            Вопрос: {question} 
@@ -33,9 +33,8 @@ vector_index = Neo4jVector.from_existing_graph(
 
 retriever = vector_index.as_retriever(search_kwargs={'k': 10})
 
-
 GRAPHRAG = GraphRAGChain(llm=llm_gpt, retriever=retriever, graph=graph, prompt=prompt)
 GRAPHRAG.collect_chain()
 
-print('Что такое дозор?')
-print(GRAPHRAG('Что такое дозор')['answer'])
+print('Question: Что такое дозор?')
+print('Answer: ',GRAPHRAG('Что такое дозор')['answer'])
