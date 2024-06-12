@@ -1,0 +1,21 @@
+defaults:
+  - _self_
+  - neo4j: base
+  - embedding2rag: ada_v2
+  - llm2rag: gpt35_turbo
+  - prompt: base
+
+
+name: "advanced_graph_rag"
+db_name: "method-3"
+test_set_path: "assets/test_set_40.csv"
+from_exist_answer: "output/base_rag/test_base_rag.csv"
+
+file_names_for_rag_eval:
+  - "assets/скан-архив/install_and_settings.docx"
+  - "assets/скан-архив/usage_big.docx"
+  - "assets/dozor/dozor.docx"
+  - "assets/dozor/install.docx"
+  - "assets/dozor/usage_big.docx"
+  - "assets/dozor/usage.docx"
+  - "assets/other/гендальф.docx"

@@ -1,9 +1,0 @@
-{
-    "faithfulness": 0.8916666666666666,
-    "context_relevancy": 0.3110604816639299,
-    "answer_relevancy": 0.8632058717071682,
-    "answer_similarity": 0.8797174440967506,
-    "bleu_score": 0.07183262133147805,
-    "cos-sim-TF-IDF": 0.25379914167353557,
-    "sim-spacy": 0.7975443808006404
-}

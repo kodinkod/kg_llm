@@ -163,11 +163,10 @@ assets/dozor/*
 .vscode/settings.json
 .DS_Store
 .DS_Store
-.DS_Store
+*.DS_Store
 *_test.py
 assets/*
 assets/other/гендальф.docx
 outputs/*
-*.ipynb
 PRODUCTION/*
-*.csv
+.DS_Store
