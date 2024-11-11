@@ -27,6 +27,8 @@ poetry shell
 1. We use hydra framework for logging and use cofig.
 2. For use all code we need have connection with neo4j db.
 
+![rag](make_graph.png)
+
 > ⚠️ warning: for use neo4j setup configs/neo4j/base.yaml (in config and .env files).
 > for use openai LLM add all API keys. (in config and .env files).
 
