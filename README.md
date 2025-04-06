@@ -1,4 +1,4 @@
-# Knowledge Graphs in the RAG. GraphGAR.
+# Knowledge Graphs in the RAG. GraphGAR
 
 Integration of the knowledge graph and LLM. The knowledge graph serves as an improved replacement for unstructured data chunk stores in QA systems.
 
