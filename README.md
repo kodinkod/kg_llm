@@ -8,6 +8,7 @@ The repository implements:
  - 🚋 GraphRAG pipeline.
  - 🚀 A web service for working with the QA system based on the knowledge graph.
 
+
 ![rag](graph-rag.png)
 
 ## install
